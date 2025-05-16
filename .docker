@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Repo') {
+            steps {
+                git 'https://github.com/bhanugoud98/bad-asses-backend.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    def imageName = 'bad-asses-backend:latest'
+                    sh "docker build -t ${imageName} ."
+                }
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    sh 'docker stop bad-asses || true && docker rm bad-asses || true'
+                    sh 'docker run -d --name bad-asses -p 3000:3000 bad-asses-backend:latest'
+                }
+            }
+        }
+    }
+}
